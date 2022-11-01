@@ -1,20 +1,93 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+<script>
+export default {
+  data() {
+    return {
+      warriorList: [
+        { name: 'Beristan Selmy', weapon: 'Sword', level: 'Pro' },
+        { name: 'Arthur Dayne', weapon: 'Sword', level: 'Pro' },
+        { name: 'Robert Baratheon', weapon: 'Hammer', level: 'Pro' },
+        { name: 'Ned Stark', weapon: 'Sword', level: 'Semi Pro' },
+        { name: 'Arya Stark', weapon: 'Bow', level: 'Pro' },
+      ],
+      favouriteList: [],
+      newWarrior: { name: null, weapon: null, level: null },
+    };
+  },
+  computed: {
+    warriorStatistics() {
+      const weapons = ['Sword', 'Hammer', 'Bow'];
+      const statistics = {
+        sword: 0,
+        hammer: 0,
+        bow: 0,
+      };
+      return this.warriorList.reduce((acc, cur) => {
+        const weapon = cur.weapon.toLowerCase();
+        return { ...acc, [weapon]: acc[weapon] + 1 };
+      }, statistics);
+    },
+  },
+  methods: {
+    toggleFavourite(name, isAddOperation = true) {
+      if (isAddOperation) this.favouriteList.push(name);
+      else {
+        const idx = this.favouriteList.findIndex((char) => char.name === name);
+        this.favouriteList.splice(idx, 1);
+      }
+    },
+    isFavouriteCharacter(name) {
+      return this.favouriteList.indexOf(name) != -1;
+    },
+    addNewWarrior() {
+      this.warriorList.push(this.newWarrior);
+      this.newWarrior = { name: null, weapon: null, level: null };
+    },
+  },
+};
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <div id="app">
+    <h1>GOT Warriors!</h1>
+    <ul v-if="warriorList.length > 0">
+      <li v-for="warrior in warriorList">
+        {{ warrior.name }} expertieses in {{ warrior.weapon }}, level -
+        {{ warrior.level }}
+        <button
+          v-if="!isFavouriteCharacter(warrior.name)"
+          @click="toggleFavourite(warrior.name)"
+        >
+          Add To Favourite
+        </button>
+        <button v-else @click="toggleFavourite(warrior.name, false)">
+          Remove from Favourite
+        </button>
+      </li>
+    </ul>
+    <div v-else>No Warrior Found!</div>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
+    <h1>Statistics</h1>
+    <p>Sword Experts: {{ warriorStatistics['sword'] }}</p>
+    <p>Hammer Experts: {{ warriorStatistics['hammer'] }}</p>
+    <p>Bow Experts: {{ warriorStatistics['bow'] }}</p>
 
-  <main>
-    <TheWelcome />
-  </main>
+    <h1>My Favourites</h1>
+    <ul v-if="favouriteList.length > 0">
+      <li v-for="fav in favouriteList">{{ fav }}</li>
+    </ul>
+    <div v-else>No favourites Found!</div>
+
+    <h1>Add new Warrior</h1>
+    <form @submit.prevent="addNewWarrior">
+      <label for="name">Name</label>
+      <input type="text" id="name" v-model="newWarrior.name" />
+      <label for="weapon">Weapon</label>
+      <input type="text" id="weapon" v-model="newWarrior.weapon" />
+      <label for="level">Level</label>
+      <input type="text" id="level" v-model="newWarrior.level" />
+      <input type="submit" value="Save" />
+    </form>
+  </div>
 </template>
 
 <style scoped>
