@@ -5,17 +5,48 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <style>
+      ul > li:not(:last-child) {
+        margin-bottom: 1rem;
+      }
+    </style>
   </head>
   <body>
     <div id="app">
       <h1>GOT Warriors!</h1>
-      <ul v-if="warriors.length > 0">
-        <li v-for="warrior in warriors">
+      <ul v-if="warriorList.length > 0">
+        <li v-for="warrior in warriorList">
           {{ warrior.name }} expertieses in {{ warrior.weapon }}, level - {{
           warrior.level }}
+          <button
+            v-if="!isFavouriteCharacter(warrior.name)"
+            @click="toggleFavourite(warrior.name)"
+          >
+            Add To Favourite
+          </button>
+          <button v-else @click="toggleFavourite(warrior.name, false)">
+            Remove from Favourite
+          </button>
         </li>
       </ul>
       <div v-else>No Warrior Found!</div>
+
+      <h1>My Favourites</h1>
+      <ul v-if="favouriteList.length > 0">
+        <li v-for="fav in favouriteList">{{ fav }}</li>
+      </ul>
+      <div v-else>No favourites Found!</div>
+
+      <h1>Add new Warrior</h1>
+      <form>
+        <label for="name">Name</label>
+        <input type="text" id="name" v-model="newCharacter.name" />
+        <label for="weapon">Weapon</label>
+        <input type="text" id="weapon" v-model="newCharacter.weapon" />
+        <label for="level">Level</label>
+        <input type="text" id="level" v-model="newCharacter.level" />
+        <button>Save</button>
+      </form>
     </div>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script>
@@ -24,13 +55,29 @@
       const app = createApp({
         data() {
           return {
-            warriors: [
+            warriorList: [
               { name: "Beristan Selmy", weapon: "Sword", level: "Pro" },
               { name: "Arthur Dayne", weapon: "Sword", level: "Pro" },
               { name: "Robert Baratheon", weapon: "Hammer", level: "Pro" },
               { name: "Ned Stark", weapon: "Sword", level: "Semi Pro" },
             ],
+            favouriteList: [],
+            newCharacter: { name: null, weapon: null, level: null },
           };
+        },
+        methods: {
+          toggleFavourite(name, isAddOperation = true) {
+            if (isAddOperation) this.favouriteList.push(name);
+            else {
+              const idx = this.favouriteList.findIndex(
+                (char) => char.name === name
+              );
+              this.favouriteList.splice(idx, 1);
+            }
+          },
+          isFavouriteCharacter(name) {
+            return this.favouriteList.indexOf(name) != -1;
+          },
         },
       });
 
