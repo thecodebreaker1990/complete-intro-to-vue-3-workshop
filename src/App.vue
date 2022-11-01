@@ -1,9 +1,14 @@
 <script>
 import Counter from './components/Counter.vue';
+import WarriorStatistics from './components/WarriorStatistics.vue';
+import AddNewWarrior from './components/AddNewWarrior.vue';
+
 export default {
   name: 'App',
   components: {
     Counter,
+    WarriorStatistics,
+    AddNewWarrior,
   },
   data() {
     return {
@@ -18,20 +23,6 @@ export default {
       newWarrior: { name: null, weapon: null, level: null },
     };
   },
-  computed: {
-    warriorStatistics() {
-      const weapons = ['Sword', 'Hammer', 'Bow'];
-      const statistics = {
-        sword: 0,
-        hammer: 0,
-        bow: 0,
-      };
-      return this.warriorList.reduce((acc, cur) => {
-        const weapon = cur.weapon.toLowerCase();
-        return { ...acc, [weapon]: acc[weapon] + 1 };
-      }, statistics);
-    },
-  },
   methods: {
     toggleFavourite(name, isAddOperation = true) {
       if (isAddOperation) this.favouriteList.push(name);
@@ -43,9 +34,8 @@ export default {
     isFavouriteCharacter(name) {
       return this.favouriteList.indexOf(name) != -1;
     },
-    addNewWarrior() {
-      this.warriorList.push(this.newWarrior);
-      this.newWarrior = { name: null, weapon: null, level: null };
+    addNewWarrior(newWarrior) {
+      this.warriorList.push(newWarrior);
     },
   },
 };
@@ -54,6 +44,9 @@ export default {
 <template>
   <div id="app">
     <Counter />
+
+    <WarriorStatistics :warriors="warriorList" />
+
     <h1>GOT Warriors!</h1>
     <ul v-if="warriorList.length > 0">
       <li v-for="warrior in warriorList">
@@ -72,26 +65,12 @@ export default {
     </ul>
     <div v-else>No Warrior Found!</div>
 
-    <h1>Statistics</h1>
-    <p>Sword Experts: {{ warriorStatistics['sword'] }}</p>
-    <p>Hammer Experts: {{ warriorStatistics['hammer'] }}</p>
-    <p>Bow Experts: {{ warriorStatistics['bow'] }}</p>
-
     <h1>My Favourites</h1>
     <ul v-if="favouriteList.length > 0">
       <li v-for="fav in favouriteList">{{ fav }}</li>
     </ul>
     <div v-else>No favourites Found!</div>
 
-    <h1>Add new Warrior</h1>
-    <form @submit.prevent="addNewWarrior">
-      <label for="name">Name</label>
-      <input type="text" id="name" v-model="newWarrior.name" />
-      <label for="weapon">Weapon</label>
-      <input type="text" id="weapon" v-model="newWarrior.weapon" />
-      <label for="level">Level</label>
-      <input type="text" id="level" v-model="newWarrior.level" />
-      <input type="submit" value="Save" />
-    </form>
+    <AddNewWarrior @on-submit-user="addNewWarrior" />
   </div>
 </template>
