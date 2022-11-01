@@ -1,5 +1,10 @@
 <script>
+import Counter from './components/Counter.vue';
 export default {
+  name: 'App',
+  components: {
+    Counter,
+  },
   data() {
     return {
       warriorList: [
@@ -48,6 +53,7 @@ export default {
 
 <template>
   <div id="app">
+    <Counter />
     <h1>GOT Warriors!</h1>
     <ul v-if="warriorList.length > 0">
       <li v-for="warrior in warriorList">
