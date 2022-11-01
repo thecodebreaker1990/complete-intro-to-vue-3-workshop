@@ -31,6 +31,11 @@
       </ul>
       <div v-else>No Warrior Found!</div>
 
+      <h1>Statistics</h1>
+      <p>Sword Experts: {{ warriorStatistics['sword'] }}</p>
+      <p>Hammer Experts: {{ warriorStatistics['hammer'] }}</p>
+      <p>Bow Experts: {{ warriorStatistics['bow'] }}</p>
+
       <h1>My Favourites</h1>
       <ul v-if="favouriteList.length > 0">
         <li v-for="fav in favouriteList">{{ fav }}</li>
@@ -38,14 +43,14 @@
       <div v-else>No favourites Found!</div>
 
       <h1>Add new Warrior</h1>
-      <form>
+      <form @submit.prevent="addNewWarrior">
         <label for="name">Name</label>
-        <input type="text" id="name" v-model="newCharacter.name" />
+        <input type="text" id="name" v-model="newWarrior.name" />
         <label for="weapon">Weapon</label>
-        <input type="text" id="weapon" v-model="newCharacter.weapon" />
+        <input type="text" id="weapon" v-model="newWarrior.weapon" />
         <label for="level">Level</label>
-        <input type="text" id="level" v-model="newCharacter.level" />
-        <button>Save</button>
+        <input type="text" id="level" v-model="newWarrior.level" />
+        <input type="submit" value="Save" />
       </form>
     </div>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -60,10 +65,25 @@
               { name: "Arthur Dayne", weapon: "Sword", level: "Pro" },
               { name: "Robert Baratheon", weapon: "Hammer", level: "Pro" },
               { name: "Ned Stark", weapon: "Sword", level: "Semi Pro" },
+              { name: "Arya Stark", weapon: "Bow", level: "Pro" },
             ],
             favouriteList: [],
-            newCharacter: { name: null, weapon: null, level: null },
+            newWarrior: { name: null, weapon: null, level: null },
           };
+        },
+        computed: {
+          warriorStatistics() {
+            const weapons = ["Sword", "Hammer", "Bow"];
+            const statistics = {
+              sword: 0,
+              hammer: 0,
+              bow: 0,
+            };
+            return this.warriorList.reduce((acc, cur) => {
+              const weapon = cur.weapon.toLowerCase();
+              return { ...acc, [weapon]: acc[weapon] + 1 };
+            }, statistics);
+          },
         },
         methods: {
           toggleFavourite(name, isAddOperation = true) {
@@ -77,6 +97,10 @@
           },
           isFavouriteCharacter(name) {
             return this.favouriteList.indexOf(name) != -1;
+          },
+          addNewWarrior() {
+            this.warriorList.push(this.newWarrior);
+            this.newWarrior = { name: null, weapon: null, level: null };
           },
         },
       });
