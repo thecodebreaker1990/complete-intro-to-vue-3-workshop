@@ -4,7 +4,49 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Stranger Things</title>
   </head>
-  <body></body>
+  <body>
+    <div id="app">
+      <h2>{{ showName }} Charaters</h2>
+      <button @click="toggleListView">Toggle List View</button>
+      <ul v-if="characters.length > 0 && isListView">
+        <li v-for="character in characters">
+          {{ character.name }} is a {{ character.gender }}
+        </li>
+      </ul>
+      <p v-else-if="characters.length > 0 && !isListView">
+        {{ commaSeparatedCharacterNames }}
+      </p>
+      <p v-else>No Charaters Found!</p>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+      const { createApp } = Vue;
+      const app = createApp({
+        data: () => ({
+          showName: "Stranger Things",
+          characters: [
+            { name: "Eleven", gender: "Female", powers: ["pshycic"] },
+            { name: "Vecna", gender: "Male", powers: ["pshycic"] },
+            { name: "Dustin", gender: "Male", powers: ["Tech geek"] },
+            { name: "Steve", gender: "Male", powers: ["Playboy"] },
+            { name: "Max", gender: "Female", powers: ["Friendly"] },
+          ],
+          isListView: true,
+        }),
+        computed: {
+          commaSeparatedCharacterNames() {
+            return this.characters.map((char) => char.name).join(", ");
+          },
+        },
+        methods: {
+          toggleListView() {
+            this.isListView = !this.isListView;
+          },
+        },
+      });
+      app.mount("#app");
+    </script>
+  </body>
 </html>
