@@ -5,44 +5,182 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stranger Things</title>
+    <style type="text/css">
+      ul {
+        padding: 0;
+        margin: 0;
+        list-style-type: none;
+      }
+      ul > li:not(:last-child) {
+        margin-bottom: 1rem;
+      }
+      button.btn-favourite {
+        margin: 0 10px;
+        padding: 0.5rem;
+        border: solid 1px black;
+        background-color: #eee;
+        color: black;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease-out;
+      }
+      button.btn-favourite:hover {
+        background-color: black;
+        color: white;
+      }
+    </style>
   </head>
   <body>
     <div id="app">
       <h2>{{ showName }} Charaters</h2>
       <button @click="toggleListView">Toggle List View</button>
-      <ul v-if="characters.length > 0 && isListView">
-        <li v-for="character in characters">
-          {{ character.name }} is a {{ character.gender }}
-        </li>
-      </ul>
-      <p v-else-if="characters.length > 0 && !isListView">
-        {{ commaSeparatedCharacterNames }}
-      </p>
-      <p v-else>No Charaters Found!</p>
+      <div>
+        <ul v-if="characters.length > 0 && isListView">
+          <li v-for="character in characters">
+            <span>{{ character.name }} is a {{ character.gender }}</span>
+            <button
+              v-if="!isCharAddedToFavourite(character.id)"
+              class="btn-favourite"
+              @click="toggleFavourite(character.id, true)"
+            >
+              Add To Favourites
+            </button>
+            <button
+              v-else
+              class="btn-favourite"
+              @click="toggleFavourite(character.id, false)"
+            >
+              Remove from Favourites
+            </button>
+          </li>
+        </ul>
+        <p v-else-if="characters.length > 0 && !isListView">
+          {{ commaSeparatedCharacterNames }}
+        </p>
+        <p v-else>No Characters Found!</p>
+      </div>
+      <pre>{{ genderStatistics }}</pre>
+      <div>
+        <h2>My Favourites</h2>
+        <ul v-if="favouriteCharacters.length > 0">
+          <li v-for="character in favouriteCharacters">{{ character.name }}</li>
+        </ul>
+        <p v-else>No Favourite Characters Found!</p>
+      </div>
+      <div>
+        <h2>Add New Characters</h2>
+        <form>
+          <label for="name">Name</label>
+          <input type="text" id="name" v-model="characterModel.name" />
+          <br />
+          <br />
+          <label for="gender">Gender</label>
+          <input
+            type="radio"
+            name="gender"
+            value="male"
+            v-model="characterModel.gender"
+          />
+          Male
+          <input
+            type="radio"
+            name="gender"
+            value="female"
+            v-model="characterModel.gender"
+          />
+          Female
+          <input
+            type="radio"
+            name="gender"
+            value="others"
+            v-model="characterModel.gender"
+          />
+          others
+          <br />
+          <br />
+          <label for="powers">Powers</label>
+          <input
+            type="text"
+            id="powers"
+            placeholder="heat vision, fly, superhuman strength"
+            v-model="listOfPowers"
+          />
+          <br />
+          <br />
+          <button @click.prevent="addNewCharacters">Save Character</button>
+        </form>
+      </div>
     </div>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script>
+      const defaultCharacterInfo = {
+        name: "",
+        gender: "male",
+        powers: [],
+      };
       const { createApp } = Vue;
       const app = createApp({
         data: () => ({
           showName: "Stranger Things",
           characters: [
-            { name: "Eleven", gender: "Female", powers: ["pshycic"] },
-            { name: "Vecna", gender: "Male", powers: ["pshycic"] },
-            { name: "Dustin", gender: "Male", powers: ["Tech geek"] },
-            { name: "Steve", gender: "Male", powers: ["Playboy"] },
-            { name: "Max", gender: "Female", powers: ["Friendly"] },
+            { id: 1, name: "Eleven", gender: "female", powers: ["pshycic"] },
+            { id: 2, name: "Vecna", gender: "male", powers: ["pshycic"] },
+            { id: 3, name: "Dustin", gender: "male", powers: ["Tech geek"] },
+            { id: 4, name: "Steve", gender: "male", powers: ["Playboy"] },
+            { id: 5, name: "Max", gender: "female", powers: ["Friendly"] },
           ],
+          favouriteCharacters: [],
+          characterModel: {
+            ...defaultCharacterInfo,
+          },
           isListView: true,
         }),
         computed: {
           commaSeparatedCharacterNames() {
             return this.characters.map((char) => char.name).join(", ");
           },
+          genderStatistics() {
+            return this.characters.reduce((acc, cur) => {
+              return {
+                ...acc,
+                [cur.gender]: (acc[cur.gender] || 0) + 1,
+              };
+            }, {});
+          },
+          listOfPowers: {
+            get() {
+              return this.characterModel.powers.join(",");
+            },
+            set(value) {
+              const powerArr = value.split(",");
+              this.characterModel.powers = powerArr;
+            },
+          },
         },
         methods: {
           toggleListView() {
             this.isListView = !this.isListView;
+          },
+          toggleFavourite(id, addToFavourite = false) {
+            const index = this.characters.findIndex((char) => char.id === id);
+
+            if (index === -1) return;
+            if (addToFavourite) {
+              const charDetails = this.characters[index];
+              this.favouriteCharacters.push(charDetails);
+            } else {
+              const idx = this.favouriteCharacters.findIndex(
+                (char) => char.id === id
+              );
+              this.favouriteCharacters.splice(idx, 1);
+            }
+          },
+          isCharAddedToFavourite(id) {
+            return this.favouriteCharacters.find((char) => char.id === id);
+          },
+          addNewCharacters() {
+            this.characters.push({ id: +new Date(), ...this.characterModel });
+            this.characterModel = { ...defaultCharacterInfo };
           },
         },
       });
