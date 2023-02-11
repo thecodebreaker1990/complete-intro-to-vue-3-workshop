@@ -1,18 +1,32 @@
 <script>
+import CharacterAddNewForm from "./components/CharacterAddNewForm.vue";
+import CharacterList from "./components/CharacterList.vue";
+import CharacterStatistics from "./components/CharacterStatistics.vue";
+
 const defaultCharacterInfo = {
   name: "",
   gender: "male",
   powers: [],
 };
 export default {
+  components: {
+    CharacterList,
+    CharacterStatistics,
+    CharacterAddNewForm,
+  },
   data: () => ({
-    showName: "Stranger Things",
+    showName: "Avatar - The Last Airbender",
     characters: [
-      { id: 1, name: "Eleven", gender: "female", powers: ["pshycic"] },
-      { id: 2, name: "Vecna", gender: "male", powers: ["pshycic"] },
-      { id: 3, name: "Dustin", gender: "male", powers: ["Tech geek"] },
-      { id: 4, name: "Steve", gender: "male", powers: ["Playboy"] },
-      { id: 5, name: "Max", gender: "female", powers: ["Friendly"] },
+      {
+        id: 1,
+        name: "Aang",
+        gender: "female",
+        powers: ["wind", "water", "fire"],
+      },
+      { id: 2, name: "Katara", gender: "male", powers: ["earth"] },
+      { id: 3, name: "Zuko", gender: "male", powers: ["space"] },
+      { id: 4, name: "Azula", gender: "male", powers: ["fire"] },
+      { id: 5, name: "Sokka", gender: "female", powers: ["wind"] },
     ],
     favouriteCharacters: [],
     characterModel: {
@@ -23,23 +37,6 @@ export default {
   computed: {
     commaSeparatedCharacterNames() {
       return this.characters.map((char) => char.name).join(", ");
-    },
-    genderStatistics() {
-      return this.characters.reduce((acc, cur) => {
-        return {
-          ...acc,
-          [cur.gender]: (acc[cur.gender] || 0) + 1,
-        };
-      }, {});
-    },
-    listOfPowers: {
-      get() {
-        return this.characterModel.powers.join(",");
-      },
-      set(value) {
-        const powerArr = value.split(",");
-        this.characterModel.powers = powerArr;
-      },
     },
   },
   methods: {
@@ -67,13 +64,17 @@ export default {
       this.characters.push({ id: +new Date(), ...this.characterModel });
       this.characterModel = { ...defaultCharacterInfo };
     },
+    updateCharacterModel(updatedInfo) {
+      this.characterModel = { ...this.characterModel, ...updatedInfo };
+    },
   },
 };
 </script>
 
 <template>
+  <!-- <button @click="toggleListView">Toggle List View</button> -->
+  <CharacterStatistics :characters="characters" />
   <h2>{{ showName }} Charaters</h2>
-  <button @click="toggleListView">Toggle List View</button>
   <div>
     <ul v-if="characters.length > 0 && isListView">
       <li v-for="character in characters" :key="character.id">
@@ -99,86 +100,38 @@ export default {
     </p>
     <p v-else>No Characters Found!</p>
   </div>
-  <pre>{{ genderStatistics }}</pre>
-  <div>
-    <h2>My Favourites</h2>
-    <ul v-if="favouriteCharacters.length > 0">
-      <li v-for="character in favouriteCharacters" :key="character.id">
-        {{ character.name }}
-      </li>
-    </ul>
-    <p v-else>No Favourite Characters Found!</p>
-  </div>
-  <div>
-    <h2>Add New Characters</h2>
-    <form>
-      <label for="name">Name</label>
-      <input type="text" id="name" v-model="characterModel.name" />
-      <br />
-      <br />
-      <label for="gender">Gender</label>
-      <input
-        type="radio"
-        name="gender"
-        value="male"
-        v-model="characterModel.gender"
-      />
-      Male
-      <input
-        type="radio"
-        name="gender"
-        value="female"
-        v-model="characterModel.gender"
-      />
-      Female
-      <input
-        type="radio"
-        name="gender"
-        value="others"
-        v-model="characterModel.gender"
-      />
-      others
-      <br />
-      <br />
-      <label for="powers">Powers</label>
-      <input
-        type="text"
-        id="powers"
-        placeholder="heat vision, fly, superhuman strength"
-        v-model="listOfPowers"
-      />
-      <br />
-      <br />
-      <button @click.prevent="addNewCharacters">Save Character</button>
-    </form>
-  </div>
+  <CharacterList
+    list-header-text="My Favourites"
+    :character-list="favouriteCharacters"
+  />
+  <CharacterAddNewForm
+    :character-model="characterModel"
+    @on-input="updateCharacterModel($event)"
+    @on-save="addNewCharacters"
+  />
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
+ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
 }
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+ul > li:not(:last-child) {
+  margin-bottom: 1rem;
 }
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+button.btn-favourite {
+  margin: 0 10px;
+  padding: 0.5rem;
+  border: solid 1px black;
+  background-color: #eee;
+  color: black;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+}
+button.btn-favourite:hover {
+  background-color: black;
+  color: white;
 }
 </style>
