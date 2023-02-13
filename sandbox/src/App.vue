@@ -1,5 +1,5 @@
 <script>
-import BaseButton from "./components/BaseButton.vue";
+import BaseLayout from "./components/BaseLayout.vue";
 import CharacterCard from "./components/CharacterCard.vue";
 import CharacterAddNewForm from "./components/CharacterAddNewForm.vue";
 import CharacterList from "./components/CharacterList.vue";
@@ -12,7 +12,7 @@ const defaultCharacterInfo = {
 };
 export default {
   components: {
-    BaseButton,
+    BaseLayout,
     CharacterCard,
     CharacterList,
     CharacterStatistics,
@@ -76,28 +76,36 @@ export default {
 </script>
 
 <template>
-  <BaseButton>Toggle List View</BaseButton>
+  <!-- <BaseButton>Toggle List View</BaseButton> -->
+  <BaseLayout>
+    <template v-slot:one>
+      <h2>{{ showName }} Charaters</h2>
+      <div>
+        <ul v-if="characters.length > 0 && isListView">
+          <li v-for="character in characters" :key="character.id">
+            <CharacterCard
+              :character="character"
+              :is-favourite="isCharAddedToFavourite(character.id)"
+              @on-toggle="toggleFavourite(character.id, $event)"
+            />
+          </li>
+        </ul>
+        <p v-else-if="characters.length > 0 && !isListView">
+          {{ commaSeparatedCharacterNames }}
+        </p>
+        <p v-else>No Characters Found!</p>
+      </div>
+    </template>
+    <template v-slot:two>
+      <CharacterList
+        list-header-text="My Favourites"
+        :character-list="favouriteCharacters"
+      />
+    </template>
+  </BaseLayout>
+
   <CharacterStatistics :characters="characters" />
-  <h2>{{ showName }} Charaters</h2>
-  <div>
-    <ul v-if="characters.length > 0 && isListView">
-      <li v-for="character in characters" :key="character.id">
-        <CharacterCard
-          :character="character"
-          :is-favourite="isCharAddedToFavourite(character.id)"
-          @on-toggle="toggleFavourite(character.id, $event)"
-        />
-      </li>
-    </ul>
-    <p v-else-if="characters.length > 0 && !isListView">
-      {{ commaSeparatedCharacterNames }}
-    </p>
-    <p v-else>No Characters Found!</p>
-  </div>
-  <CharacterList
-    list-header-text="My Favourites"
-    :character-list="favouriteCharacters"
-  />
+
   <CharacterAddNewForm
     :character-model="characterModel"
     @on-input="updateCharacterModel($event)"
