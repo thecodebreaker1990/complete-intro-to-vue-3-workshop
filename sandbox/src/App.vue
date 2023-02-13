@@ -1,4 +1,6 @@
 <script>
+import BaseButton from "./components/BaseButton.vue";
+import CharacterCard from "./components/CharacterCard.vue";
 import CharacterAddNewForm from "./components/CharacterAddNewForm.vue";
 import CharacterList from "./components/CharacterList.vue";
 import CharacterStatistics from "./components/CharacterStatistics.vue";
@@ -10,6 +12,8 @@ const defaultCharacterInfo = {
 };
 export default {
   components: {
+    BaseButton,
+    CharacterCard,
     CharacterList,
     CharacterStatistics,
     CharacterAddNewForm,
@@ -72,27 +76,17 @@ export default {
 </script>
 
 <template>
-  <!-- <button @click="toggleListView">Toggle List View</button> -->
+  <BaseButton>Toggle List View</BaseButton>
   <CharacterStatistics :characters="characters" />
   <h2>{{ showName }} Charaters</h2>
   <div>
     <ul v-if="characters.length > 0 && isListView">
       <li v-for="character in characters" :key="character.id">
-        <span>{{ character.name }} is a {{ character.gender }}</span>
-        <button
-          v-if="!isCharAddedToFavourite(character.id)"
-          class="btn-favourite"
-          @click="toggleFavourite(character.id, true)"
-        >
-          Add To Favourites
-        </button>
-        <button
-          v-else
-          class="btn-favourite"
-          @click="toggleFavourite(character.id, false)"
-        >
-          Remove from Favourites
-        </button>
+        <CharacterCard
+          :character="character"
+          :is-favourite="isCharAddedToFavourite(character.id)"
+          @on-toggle="toggleFavourite(character.id, $event)"
+        />
       </li>
     </ul>
     <p v-else-if="characters.length > 0 && !isListView">
@@ -119,19 +113,5 @@ ul {
 }
 ul > li:not(:last-child) {
   margin-bottom: 1rem;
-}
-button.btn-favourite {
-  margin: 0 10px;
-  padding: 0.5rem;
-  border: solid 1px black;
-  background-color: #eee;
-  color: black;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease-out;
-}
-button.btn-favourite:hover {
-  background-color: black;
-  color: white;
 }
 </style>

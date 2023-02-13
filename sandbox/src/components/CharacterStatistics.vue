@@ -7,13 +7,22 @@ export default {
     },
   },
   computed: {
-    genderStatistics() {
+    powerStatistics() {
+      const elementalPowerStatistics = {
+        earth: 0,
+        water: 0,
+        fire: 0,
+        wind: 0,
+        space: 0,
+      };
       return this.characters.reduce((acc, cur) => {
-        return {
-          ...acc,
-          [cur.gender]: (acc[cur.gender] || 0) + 1,
-        };
-      }, {});
+        const powers = cur.powers;
+        powers.forEach((power) => {
+          const currentStatistic = acc[power] || 0;
+          acc = { ...acc, [power]: currentStatistic + 1 };
+        });
+        return acc;
+      }, elementalPowerStatistics);
     },
   },
 };
@@ -22,7 +31,7 @@ export default {
 <template>
   <h2>Statistics</h2>
   <ul>
-    <li v-for="(stat, type) in genderStatistics" :key="`char-${stat}-${type}`">
+    <li v-for="(stat, type) in powerStatistics" :key="`char-${stat}-${type}`">
       {{ type }}: {{ stat }}
     </li>
   </ul>
