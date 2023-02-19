@@ -1,41 +1,36 @@
 <script>
-import UserCardList from "./components/UserCardList.vue";
-import UserTable from "./components/UserTable.vue";
+import Pokedex from "./components/Pokedex.vue";
+import Users from "./components/Users.vue";
 
 export default {
   components: {
-    UserCardList,
-    UserTable,
-  },
-  data() {
-    return {
-      userList: [],
-      activeView: "card-list",
-    };
-  },
-  computed: {
-    viewComponent() {
-      return `user-${this.activeView}`;
-    },
-  },
-  methods: {
-    async fetchUsers() {
-      this.userList = await fetch(
-        "https://jsonplaceholder.typicode.com/users"
-      ).then((response) => response.json());
-    },
-  },
-  created() {
-    this.fetchUsers();
+    Pokedex,
+    Users,
   },
 };
 </script>
 
 <template>
-  <h2>UserList</h2>
-  <div>
-    <button @click="activeView = 'card-list'">Card View</button>
-    <button @click="activeView = 'table'">Table View</button>
+  <div class="container">
+    <div>
+      <Suspense>
+        <Users />
+        <template #fallback> Loading Users... </template>
+      </Suspense>
+    </div>
+    <div>
+      <Suspense>
+        <Pokedex />
+        <template #fallback> Loading Pokedex... </template>
+      </Suspense>
+    </div>
   </div>
-  <component :is="viewComponent" :user-list="userList" />
 </template>
+
+<style>
+.container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column-gap: 5rem;
+}
+</style>
