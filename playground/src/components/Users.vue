@@ -1,44 +1,32 @@
-<script>
+<script setup>
 import { reactive, computed } from "vue";
+
 import UserCardList from "./UserCardList.vue";
 import UserTable from "./UserTable.vue";
 
-export default {
-  async setup() {
-    const state = reactive({
-      activeView: "table",
-      userList: [],
-    });
+const state = reactive({
+  activeView: "table",
+  userList: [],
+});
 
-    const viewComponent = computed(function () {
-      return `user-${state.activeView}`;
-    });
+const viewComponent = computed(function () {
+  if (state.activeView === "table") return UserTable;
+  else return UserCardList;
+});
 
-    const updateView = function (viewType) {
-      state.activeView = viewType;
-    };
-
-    const fetchUsers = async function () {
-      const response = await fetch(
-        "https://jsonplaceholder.typicode.com/users"
-      ).then((response) => response.json());
-
-      return response;
-    };
-
-    state.userList = await fetchUsers();
-
-    return {
-      viewComponent,
-      userList: state.userList,
-      updateView,
-    };
-  },
-  components: {
-    UserCardList,
-    UserTable,
-  },
+const updateView = function (viewType) {
+  state.activeView = viewType;
 };
+
+const fetchUsers = async function () {
+  const response = await fetch(
+    "https://jsonplaceholder.typicode.com/users"
+  ).then((response) => response.json());
+
+  return response;
+};
+
+state.userList = await fetchUsers();
 </script>
 
 <template>
@@ -47,5 +35,5 @@ export default {
     <button @click="updateView('card-list')">Card View</button>
     <button @click="updateView('table')">Table View</button>
   </div>
-  <component :is="viewComponent" :user-list="userList" />
+  <component :is="viewComponent" :user-list="state.userList" />
 </template>

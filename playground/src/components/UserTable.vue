@@ -1,12 +1,12 @@
-<script>
-export default {
-  props: {
-    userList: {
-      type: Object,
-      required: true,
-    },
+<script setup>
+import { defineProps } from "vue";
+
+defineProps({
+  userList: {
+    type: Array,
+    required: true,
   },
-};
+});
 </script>
 
 <template>
