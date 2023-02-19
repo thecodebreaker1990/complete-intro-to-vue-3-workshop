@@ -1,16 +1,16 @@
-<script>
-export default {
-  props: {
-    user: {
-      type: Object,
-      required: true,
-    },
-    wrapperClass: {
-      type: String,
-      default: "",
-    },
+<script setup>
+import { defineProps } from "vue";
+
+defineProps({
+  user: {
+    type: Object,
+    required: true,
   },
-};
+  wrapperClass: {
+    type: String,
+    default: "",
+  },
+});
 </script>
 
 <template>
