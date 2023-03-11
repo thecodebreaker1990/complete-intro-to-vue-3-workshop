@@ -1,25 +1,21 @@
 <script setup>
 import { ref, computed } from "vue";
+import { useDataList } from "@/composables/useDataList";
 
 let regionName = ref("kanto");
-let pokedex = [];
 
 const regionNameAllCaps = computed(function () {
   return regionName.value.toUpperCase();
 });
 
-const fetchPokeMon = async function () {
-  const { results } = await fetch(
-    "https://pokeapi.co/api/v2/pokemon?limit=20"
-  ).then((response) => response.json());
-  pokedex = results;
-};
-
 const changeRegionName = function () {
   regionName.value = "Hoenn";
 };
 
-await fetchPokeMon();
+const { state: pokedex } = useDataList(
+  "https://pokeapi.co/api/v2/pokemon?limit=20",
+  []
+);
 </script>
 
 <template>
