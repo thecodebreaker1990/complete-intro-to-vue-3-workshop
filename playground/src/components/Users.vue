@@ -28,7 +28,13 @@ const { state: userList } = useDataList(
   <h2>UserList</h2>
   <div>
     <button @click="updateView('card-list')">Card View</button>
-    <button @click="updateView('table')">Table View</button>
+    <button :class="$style.btn" @click="updateView('table')">Table View</button>
   </div>
   <component :is="viewComponent" :user-list="userList" />
 </template>
+
+<style module>
+.btn {
+  border-color: green;
+}
+</style>
