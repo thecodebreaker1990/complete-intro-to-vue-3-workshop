@@ -22,6 +22,9 @@ const { state: pokedex } = useDataList(
   <h2>Region Name : {{ regionName }}</h2>
   <h3>Region Name (Capitalized): {{ regionNameAllCaps }}</h3>
   <button @click="changeRegionName">Change Region Name</button>
+  <br />
+  <router-link to="/pokedex/20">Go to Pokemon #20></router-link>
+  <br />
   <ul>
     <li v-for="pokemon in pokedex" :key="pokemon.url">
       <p>{{ pokemon.name }}</p>

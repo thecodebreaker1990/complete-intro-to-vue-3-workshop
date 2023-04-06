@@ -1,9 +1,7 @@
 <script setup>
-import Pokedex from "./components/Pokedex.vue";
-import Users from "./components/Users.vue";
 import { ref } from "vue";
 
-const colorPreference = ref("black");
+const colorPreference = ref("white");
 </script>
 
 <template>
@@ -11,17 +9,22 @@ const colorPreference = ref("black");
     <div>
       <h2>Color Preference = {{ colorPreference }}</h2>
       <input type="color" v-model="colorPreference" />
-      <Suspense>
+      <nav>
+        <router-link to="/">Users</router-link>&nbsp;
+        <router-link to="/pokedex">Pokedex</router-link>
+      </nav>
+      <!-- <Suspense>
         <Users />
         <template #fallback> Loading Users... </template>
-      </Suspense>
+      </Suspense> -->
+      <router-view />
     </div>
-    <div>
+    <!-- <div>
       <Suspense>
         <Pokedex />
         <template #fallback> Loading Pokedex... </template>
       </Suspense>
-    </div>
+    </div> -->
   </div>
 </template>
 
